@@ -1,0 +1,53 @@
+---
+- name: install nagios4
+  hosts: monitors
+  remote_user: admin
+  tasks:
+  - name: install apache2 package
+    apt:
+      name: apache2
+    become: true
+  - name: enable auth_digest
+    apache2_module:
+      state: present
+      name: auth_digest
+      ignore_configcheck: true
+    become: true
+    notify: restart apache2
+  - name: enable authz_groupfile
+    apache2_module:
+      state: present
+      name: authz_groupfile
+      ignore_configcheck: true
+    become: true
+    notify: restart apache2
+  - name: install nagios4 packages
+    apt:
+      name: "{{ packages }}"
+    become: true
+    vars:
+      packages:
+      - python3-setuptools
+      - python3-pip
+      - nagios4
+      - nagios4-cgi
+      - rsync
+  - name: copy nagios configuration
+    synchronize:
+      src: conf.d/
+      dest: /etc/nagios4/conf.d
+      delete: yes
+      recursive: yes
+    become: true
+    notify: reload nagios4
+  handlers:
+  - name: restart apache2
+    service:
+      name: apache2
+      state: restarted
+    become: true
+  - name: reload nagios4
+    service:
+      name: nagios4
+      state: reloaded
+    become: true

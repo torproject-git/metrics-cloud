@@ -1,0 +1,52 @@
+---
+- name: disable system tor
+  systemd:
+    name: tor.service
+    enabled: false
+    state: stopped
+  become: true
+- name: install stem from backports
+  apt:
+    pkg: python-stem
+    state: latest
+    default_release: stretch-backports
+  become: true
+  notify: restart onionperf
+- name: install onionperf dependencies
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+    state: latest
+  vars:
+    packages:
+    - libglib2.0-0
+    - libigraph0v5
+    - python-ipaddress
+    - python-lxml
+    - python-matplotlib
+    - python-netifaces
+    - python-networkx
+    - python-nose
+    - python-numpy
+    - python-scipy
+  become: true
+  notify: restart onionperf
+- name: install onionperf
+  apt:
+    deb: https://people.torproject.org/~irl/deb/onionperf_2019052301_amd64.deb
+    state: present
+  become: true
+  notify: restart onionperf
+- name: create onionperf user
+  user:
+    name: onionperf
+    state: present
+    comment: OnionPerf Service User
+    home: /srv/onionperf.torproject.net
+  become: true
+- name: install onionperf service file
+  template:
+    src: files/onionperf.service.j2
+    dest: /etc/systemd/system/onionperf.service
+  notify: restart onionperf
+  become: true

@@ -1,0 +1,20 @@
+---
+- name: include deb.torproject.org apt key
+  apt_key:
+    url: https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc
+    id: A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89
+    state: present
+  become: true
+- name: add deb.torproject.org repository
+  apt_repository: repo='deb https://deb.torproject.org/torproject.org {{ansible_distribution_release}} main' state=present update_cache=yes
+  become: true
+- name: install tor
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+    state: latest
+  vars:
+    packages:
+    - tor
+    - deb.torproject.org-keyring
+  become: true

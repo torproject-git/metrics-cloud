@@ -1,0 +1,7 @@
+---
+- hosts: onionperfs
+  user: admin
+  roles:
+    - debian-backports
+    - tor-client
+    - onionperf

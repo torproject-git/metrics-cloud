@@ -1,0 +1,3 @@
+---
+- import_playbook: monitors.yml
+- import_playbook: onionperfs.yml

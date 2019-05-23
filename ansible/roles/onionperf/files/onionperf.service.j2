@@ -1,0 +1,14 @@
+[Unit]
+Description=OnionPerf
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=onionperf
+WorkingDirectory=/srv/onionperf.torproject.net
+ExecStart=/usr/bin/onionperf measure --tgen-listen-port 80
+
+[Install]
+WantedBy=multi-user.target
+
