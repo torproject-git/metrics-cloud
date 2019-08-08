@@ -1,0 +1,8 @@
+[onionperfs]
+op-ab.onionperf.torproject.net
+op-hk.onionperf.torproject.net
+op-nl.onionperf.torproject.net
+op-us.onionperf.torproject.net
+
+[monitors]
+54.196.58.240

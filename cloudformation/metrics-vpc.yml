@@ -1,0 +1,89 @@
+---
+# CloudFormation Stack for Tor Metrics VPC
+# This stack will only deploy on us-east-1
+# aws cloudformation deploy --region us-east-1 --stack-name metrics-vpc --template-file metrics-vpc.yml
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 172.31.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      InstanceTenancy: default
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+  VPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+  Subnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-1a
+      VpcId: !Ref VPC
+      CidrBlock: 172.31.0.0/20
+      MapPublicIpOnLaunch: true
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+  InternetRoute:
+    Type: AWS::EC2::Route
+    DependsOn: VPCGatewayAttachment
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref RouteTable
+  SubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTable
+      SubnetId: !Ref Subnet
+  InternetSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: "Internet Security Group"
+      GroupDescription: "SSH traffic in, all traffic out."
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+  PingableSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: "Pingable Security Group"
+      GroupDescription: "ICMP echo requests in"
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: icmp
+          FromPort: 8
+          ToPort: -1
+          CidrIp: 0.0.0.0/0
+Outputs:
+  VPC:
+    Value: !Ref VPC
+    Description: Tor Metrics VPC ID
+    Export:
+      Name: !Sub MetricsVPC
+  Subnet:
+    Value: !Ref Subnet
+    Description: Tor Metrics Subnet ID
+    Export:
+      Name: !Sub MetricsSubnet
+  InternetSecurityGroup:
+    Value: !Ref InternetSecurityGroup
+    Description: Tor Metrics Internet Security Group ID
+    Export:
+      Name: !Sub MetricsInternetSecurityGroup
+  PingableSecurityGroup:
+    Value: !Ref PingableSecurityGroup
+    Description: Tor Metrics Pingable Security Group ID
+    Export:
+      Name: !Sub MetricsPingableSecurityGroup
