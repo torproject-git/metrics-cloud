@@ -66,6 +66,28 @@ Resources:
           FromPort: 8
           ToPort: -1
           CidrIp: 0.0.0.0/0
+  HTTPSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: "HTTP Security Group"
+      GroupDescription: "TCP/80 requests in"
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+  HTTPSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: "HTTPS Security Group"
+      GroupDescription: "TCP/443 requests in"
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
 Outputs:
   VPC:
     Value: !Ref VPC
@@ -87,3 +109,13 @@ Outputs:
     Description: Tor Metrics Pingable Security Group ID
     Export:
       Name: !Sub MetricsPingableSecurityGroup
+  HTTPSecurityGroup:
+    Value: !Ref HTTPSecurityGroup
+    Description: Tor Metrics HTTP Security Group ID
+    Export:
+      Name: !Sub MetricsHTTPSecurityGroup
+  HTTPSSecurityGroup:
+    Value: !Ref HTTPSSecurityGroup
+    Description: Tor Metrics HTTPS Security Group ID
+    Export:
+      Name: !Sub MetricsHTTPSSecurityGroup
