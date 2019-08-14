@@ -6,7 +6,7 @@
     state: present
   become: true
 - name: add deb.torproject.org repository
-  apt_repository: repo='deb https://deb.torproject.org/torproject.org {{ansible_distribution_release}} main' state=present update_cache=yes
+  apt_repository: repo='deb https://deb.torproject.org/torproject.org {{ ansible_distribution_release }} main' state=present update_cache=yes
   become: true
 - name: install tor
   apt:
