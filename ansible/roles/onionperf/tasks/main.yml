@@ -50,3 +50,8 @@
     dest: /etc/systemd/system/onionperf.service
   notify: restart onionperf
   become: true
+- name: install apache2
+  apt:
+    name: apache2
+  become: true
+
