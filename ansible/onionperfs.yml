@@ -5,3 +5,4 @@
     - debian-backports
     - tor-client
     - onionperf
+    - letsencrypt
