@@ -3,6 +3,7 @@ variables:
 
 stages:
  - ansible-lint
+ - cfn-lint
 
 ansible-lint:
  stage: ansible-lint
@@ -12,3 +13,12 @@ ansible-lint:
   - apt -y install ansible-lint
   - pushd ansible
   - ansible-lint -x 403 site.yml
+
+cfn-lint:
+ stage: cfn-lint
+ image: debian:buster
+ script:
+  - apt -y update
+  - apt -y install python3-pip
+  - pip3 install cfn-lint
+  - cfn-lint cloudformation/*.yml
