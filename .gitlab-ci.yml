@@ -1,0 +1,14 @@
+variables:
+  GIT_STRATEGY: clone
+
+stages:
+ - ansible-lint
+
+ansible-lint:
+ stage: ansible-lint
+ image: debian:buster
+ script:
+  - apt -y update
+  - apt -y install ansible-lint
+  - pushd ansible
+  - ansible-lint -x 403 site.yml
