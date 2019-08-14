@@ -1,4 +1,4 @@
 ---
 - name: restart onionperf
-  systemd: state=started name=onionperf daemon_reload=yes
+  systemd: state=restarted name=onionperf daemon_reload=yes
   become: true
