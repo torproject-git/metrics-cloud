@@ -1,0 +1,18 @@
+---
+
+letsencrypt_account_email: "acute@torproject.org"
+domain: "test.t1.erg.abdn.ac.uk"
+
+# staging - use this for testing!
+letsencrypt_acme_directory: "https://acme-staging-v02.api.letsencrypt.org/directory"
+
+# production - use this when you want an actual certificate
+#letsencrypt_acme_directory: "https://acme-v01.api.letsencrypt.org/directory"
+letsencrypt_agreement: "https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf"
+letsencrypt_terms_agreed: 1
+letsencrypt_acme_version: 2
+letsencrypt_challenge: "http-01"
+letsencrypt_dest: "/etc/letsencrypt"
+letsencrypt_remaining_days: 90
+
+onionperf_directory : "/srv/onionperf.torproject.net/onionperf-data"

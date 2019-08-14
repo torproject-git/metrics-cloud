@@ -1,0 +1,143 @@
+---
+# in here put the domain for the certificate required
+- name: Create certficate directory
+  file:
+    path: "{{ letsencrypt_dest }}/{{ domain }}"
+    state: directory
+  become: true
+
+- name: Copy Apache default configuration
+  template:
+    src: files/000-default.conf.j2
+    dest: /etc/apache2/sites-available/000-default.conf
+    owner: www-data
+    group: www-data
+    mode: '0644'
+  become: true
+
+- name: Copy Apache SSL configuration
+  template:
+    src: files/default-ssl.conf.j2
+    dest: /etc/apache2/sites-available/default-ssl.conf
+    owner: www-data
+    group: www-data
+    mode: '0644'
+  become: true
+
+
+# generate account key, if necessary
+- name: Find account.key
+  stat:
+    path: "{{ letsencrypt_dest }}/{{ domain }}/account.key"
+  register: account_key
+  become: true
+  run_once: true
+
+- name: Generate account.key
+  shell: openssl genrsa 4096 > "{{ letsencrypt_dest }}/{{ domain }}/account.key"
+  run_once: true
+  when: not account_key.stat.exists
+  become: true
+
+# generate domain key, if necessary
+- name: Find domain.key
+  stat:
+    path: "{{ letsencrypt_dest }}/{{ domain }}/domain.key"
+  register: domain_key
+  become: true
+  run_once: true
+
+- name: Generate domain.key
+  shell: openssl genrsa 4096 > "{{ letsencrypt_dest }}/{{ domain }}/domain.key"
+  run_once: true
+  when: not domain_key.stat.exists
+  become: true
+
+# generate domain csr, if necessary
+- name: Find domain.csr
+  stat:
+    path: "{{ letsencrypt_dest }}/{{ domain }}/domain.csr"
+  register: domain_csr
+  become: true
+  run_once: true
+
+- name: Generate domain.csr
+  shell: openssl req -new -sha256 -key "{{ letsencrypt_dest }}/{{ domain }}/domain.key" \
+   -subj "/CN={{ domain }}" > "{{ letsencrypt_dest }}/{{ domain }}/domain.csr"
+  run_once: true
+  when: not domain_csr.stat.exists
+  become: true
+
+- name: Create challenge
+  acme_certificate:
+    account_key_src: "{{ letsencrypt_dest }}/{{ domain }}/account.key"
+    csr: "{{ letsencrypt_dest }}/{{ domain }}/domain.csr"
+    dest: "{{ letsencrypt_dest }}/{{ domain }}/signed.crt"
+    chain_dest: "{{ letsencrypt_dest }}/{{ domain }}/intermediate.pem"
+    fullchain_dest: "{{ letsencrypt_dest }}/{{ domain }}/fullchain.pem"
+    account_email: "{{ letsencrypt_account_email }}"
+    acme_directory: "{{ letsencrypt_acme_directory }}"
+    acme_version: "{{ letsencrypt_acme_version }}"
+    agreement: "{{ letsencrypt_agreement }}"
+    terms_agreed: "{{ letsencrypt_terms_agreed }}"
+    challenge: "{{ letsencrypt_challenge }}"
+    remaining_days: "{{ letsencrypt_remaining_days }}"
+  register: op_challenge
+  become: true
+
+- name: Create challenge webserver directory
+  file:
+    path: "/var/www/html/.well-known/acme-challenge"
+    state: directory
+    recurse: yes
+  become: true
+
+- name: Copy challenge files to webserver root
+  copy:
+   dest: "/var/www/html/{{ op_challenge['challenge_data'][domain]['http-01']['resource'] }}"
+   content: "{{ op_challenge['challenge_data'][domain]['http-01']['resource_value'] }}"
+  when: op_challenge is changed
+  become: true
+
+- name: Create certificate
+  acme_certificate:
+    account_key_src: "{{ letsencrypt_dest }}/{{ domain }}/account.key"
+    csr: "{{ letsencrypt_dest }}/{{ domain }}/domain.csr"
+    dest: "{{ letsencrypt_dest }}/{{ domain }}/signed.crt"
+    chain_dest: "{{ letsencrypt_dest }}/{{ domain }}/intermediate.pem"
+    agreement: "{{ letsencrypt_agreement }}"
+    terms_agreed: "{{ letsencrypt_terms_agreed }}"
+    fullchain_dest: "{{ letsencrypt_dest }}/{{ domain }}/fullchain.pem"
+    data: "{{ op_challenge }}"
+    account_email: "{{ letsencrypt_account_email }}"
+    acme_directory: "{{ letsencrypt_acme_directory }}"
+    acme_version: "{{ letsencrypt_acme_version }}"
+    challenge: "{{ letsencrypt_challenge }}"
+    remaining_days: "{{ letsencrypt_remaining_days }}"
+  run_once: true
+  when: op_challenge is changed
+  register: verify_challenge
+  become: true
+
+- name: Enable SSL module
+  apache2_module:
+    state: present
+    name: ssl
+  become: true
+  notify:
+    - reload apache2
+
+- name: Look for existing SSL website
+  stat:
+    path: "/etc/apache2/sites-enabled/default-ssl.conf"
+  register: ssl_website
+  become: true
+  run_once: true
+
+- name: Enable SSL website
+  command: a2ensite default-ssl.conf
+  become: true
+  run_once: true
+  when: not ssl_website.stat.exists
+  notify:
+    - reload apache2

@@ -1,0 +1,18 @@
+<VirtualHost *:80>
+        ServerName {{ domain }}
+        ServerAdmin {{ letsencrypt_account_email }} 
+        DocumentRoot {{ onionperf_directory}}
+
+	Alias "/.well-known" "/var/www/html/.well-known"
+
+       <Directory {{ onionperf_directory }}>
+        Options Indexes
+        Require all granted
+       </Directory>
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+ 
+</VirtualHost>
+
+

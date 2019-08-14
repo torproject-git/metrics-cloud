@@ -1,0 +1,22 @@
+<VirtualHost *:443>
+        ServerName {{ domain }}
+
+        ServerAdmin {{ letsencrypt_account_email }} 
+        DocumentRoot {{ onionperf_directory}}
+
+       <Directory {{ onionperf_directory }}>
+        Options Indexes
+        Require all granted
+       </Directory>
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+        SSLEngine On
+        SSLCertificateFile "{{ letsencrypt_dest }}/{{ domain }}/signed.crt"
+        SSLCertificateKeyFile "{{ letsencrypt_dest }}/{{ domain }}/domain.key"
+        SSLCertificateChainFile "{{ letsencrypt_dest }}/{{ domain }}/fullchain.pem"
+ 
+</VirtualHost>
+
+
