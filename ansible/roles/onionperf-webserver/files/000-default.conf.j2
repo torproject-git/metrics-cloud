@@ -1,6 +1,6 @@
 <VirtualHost *:80>
         ServerName {{ domain }}
-        ServerAdmin {{ letsencrypt_account_email }} 
+        ServerAdmin {{ webmaster_email }} 
         DocumentRoot {{ onionperf_directory}}
 
 	Alias "/.well-known" "/var/www/html/.well-known"

@@ -1,7 +1,7 @@
 <VirtualHost *:443>
         ServerName {{ domain }}
 
-        ServerAdmin {{ letsencrypt_account_email }} 
+        ServerAdmin {{ webmaster_email }} 
         DocumentRoot {{ onionperf_directory}}
 
        <Directory {{ onionperf_directory }}>

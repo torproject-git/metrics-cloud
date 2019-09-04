@@ -1,0 +1,6 @@
+---
+
+domain: "test.t1.erg.abdn.ac.uk"
+webmaster_email: "metrics-web@torproject.org"
+letsencrypt_dest: "/etc/letsencrypt"
+onionperf_directory : "/srv/onionperf.torproject.net/onionperf-data"

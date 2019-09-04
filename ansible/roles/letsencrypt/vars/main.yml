@@ -14,5 +14,3 @@ letsencrypt_acme_version: 2
 letsencrypt_challenge: "http-01"
 letsencrypt_dest: "/etc/letsencrypt"
 letsencrypt_remaining_days: 90
-
-onionperf_directory : "/srv/onionperf.torproject.net/onionperf-data"

@@ -6,3 +6,4 @@
     - tor-client
     - onionperf
     - letsencrypt
+    - onionperf-webserver
