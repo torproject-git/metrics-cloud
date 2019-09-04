@@ -1,6 +1,6 @@
 ---
 
-letsencrypt_account_email: "acute@torproject.org"
+letsencrypt_account_email: "metrics-web@torproject.org"
 domain: "test.t1.erg.abdn.ac.uk"
 
 # staging - use this for testing!
