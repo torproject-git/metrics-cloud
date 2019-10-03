@@ -1,0 +1,40 @@
+# CloudFormation Stack for Billing Alerts
+# This stack will only deploy on us-east-1 (that's where billing happens)
+# aws cloudformation deploy --region us-east-1 --stack-name billing-alerts --template-file billing-alerts.yml
+Description: "Billing alerts"
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  DevAlarmThreshold:
+    Description: Development account alarm threshold.
+    Type: Number
+    Default: 50
+Resources:
+  DevSpendingAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: !Sub >
+        "Alarm if AWS development account spending is over $${DevAlarmThreshold}"
+      Namespace: AWS/Billing
+      MetricName: EstimatedCharges
+      Dimensions:
+      - Name: Currency
+        Value: USD
+      - Name: LinkedAccount
+        Value: !Sub ${AWS::AccountId}
+      Statistic: Maximum
+      Period: '21600'
+      EvaluationPeriods: '1'
+      Threshold:
+        Ref: "DevAlarmThreshold"
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+      - Ref: BillingAlertContact
+      InsufficientDataActions:
+      - Ref: BillingAlertContact
+  BillingAlertContact:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: "BillingAlertNotification"
+      Subscription:
+        - Endpoint: "irl@torproject.org"
+          Protocol: email
