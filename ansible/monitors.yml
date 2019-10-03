@@ -34,7 +34,7 @@
       - rsync
   - name: copy nagios configuration
     synchronize:
-      src: conf.d/
+      src: roles/metrics-monitor/files/
       dest: /etc/nagios4/conf.d
       delete: yes
       recursive: yes
