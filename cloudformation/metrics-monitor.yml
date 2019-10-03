@@ -1,5 +1,5 @@
 ---
-# CloudFormation Stack for Tor Metrics Operational Monitoring
+# CloudFormation Stack for Hacky Tor Metrics Operational Monitoring
 # This stack will only deploy on us-east-1 and will deploy in the metrics VPC
 # aws cloudformation deploy --region us-east-1 --stack-name metrics-monitor --template-file metrics-monitor.yml --capabilities CAPABILITY_IAM
 AWSTemplateFormatVersion: 2010-09-09
@@ -17,6 +17,8 @@ Resources:
       SecurityGroupIds:
         - Fn::ImportValue: !Sub 'MetricsInternetSecurityGroup'
         - Fn::ImportValue: !Sub 'MetricsPingableSecurityGroup'
+        - Fn::ImportValue: !Sub 'MetricsHTTPSecurityGroup'
+        - Fn::ImportValue: !Sub 'MetricsHTTPSSecurityGroup'
   AlertContact:
     Type: AWS::SNS::Topic
     Properties:
@@ -52,6 +54,18 @@ Resources:
           - Action: sns:Publish
             Effect: Allow
             Resource: !Ref AlertContact
+        Version: '2012-10-17'
+      Roles:
+      - !Ref AlerterRole
+  AlerterQueryPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: AlertQueryPolicy
+      PolicyDocument:
+        Statement:
+          - Action: cloudformation:DescribeStackResources
+            Effect: Allow
+            Resource: !Ref AWS::StackId
         Version: '2012-10-17'
       Roles:
       - !Ref AlerterRole
