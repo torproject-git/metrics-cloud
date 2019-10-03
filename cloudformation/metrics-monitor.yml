@@ -8,7 +8,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       AvailabilityZone: us-east-1a
-      ImageId: ami-0bd9223868b4778d7
+      ImageId: ami-01db78123b2b99496
       InstanceType: t2.micro
       SubnetId:
         Fn::ImportValue: !Sub 'MetricsSubnet'
