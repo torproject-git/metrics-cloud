@@ -1,6 +1,6 @@
 ---
 # CloudFormation Stack for OnionPerf development instance
-# This stack will only deploy on us-east-1 and will deploy in its own VPC there
+# This stack will only deploy on us-east-1 and will deploy in the Metrics VPC
 # TODO: Generalise the SSH key to use
 # aws cloudformation deploy --region us-east-1 --stack-name `whoami`-onionperf-dev --template-file onionperf-dev.yml
 AWSTemplateFormatVersion: 2010-09-09
