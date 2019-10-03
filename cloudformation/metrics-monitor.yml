@@ -1,5 +1,5 @@
 ---
-# CloudFormation Stack for Hacky Tor Metrics Operational Monitoring
+# CloudFormation Stack for Tor Metrics Operational Monitoring
 # This stack will only deploy on us-east-1 and will deploy in the metrics VPC
 # aws cloudformation deploy --region us-east-1 --stack-name metrics-monitor --template-file metrics-monitor.yml --capabilities CAPABILITY_IAM
 AWSTemplateFormatVersion: 2010-09-09
@@ -25,6 +25,8 @@ Resources:
       DisplayName: "MetricsAlertNotification"
       Subscription:
         - Endpoint: "irl@torproject.org"
+          Protocol: email
+        - Endpoint: "karsten@torproject.org"
           Protocol: email
   AlerterInstanceProfile:
     Type: AWS::IAM::InstanceProfile
