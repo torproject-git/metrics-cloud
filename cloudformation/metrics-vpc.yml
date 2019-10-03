@@ -2,6 +2,7 @@
 # CloudFormation Stack for Tor Metrics VPC
 # This stack will only deploy on us-east-1
 # aws cloudformation deploy --region us-east-1 --stack-name metrics-vpc --template-file metrics-vpc.yml
+Description: "Tor Metrics VPC"
 AWSTemplateFormatVersion: 2010-09-09
 Resources:
   VPC:
