@@ -9,7 +9,7 @@
   apt:
     pkg: python-stem
     state: latest
-    default_release: stretch-backports
+    default_release: buster-backports
   become: true
   notify: restart onionperf
 - name: install onionperf dependencies
