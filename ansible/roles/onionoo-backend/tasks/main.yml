@@ -1,0 +1,148 @@
+---
+# TODO: don't always restart
+# TODO: check if the updater is running, and stop if it's ok to stop it,
+#       but only if needed
+# TODO: --single-run if out doesn't exist
+- name: set onionoo profile
+  copy:
+    src: profile.onionoo
+    dest: /srv/onionoo.torproject.org/home/.profile
+    mode: 0600
+  become: yes
+  become_user: onionoo
+- name: set onionoo-unpriv profile
+  copy:
+    src: profile.onionoo-unpriv
+    dest: /srv/onionoo.torproject.org/home-unpriv/.profile
+    mode: 0600
+  become: yes
+  become_user: onionoo-unpriv
+- name: check onionoo service status
+  systemd:
+    scope: user
+    name: onionoo
+  register: onionoo_service
+  become: yes
+  become_user: onionoo
+- name: debug
+  debug:
+    var: onionoo_service
+- name: assert that updater service is stopped
+  assert:
+    that: onionoo_service.status.ActiveState != "active"
+- name: check for latest jar
+  stat:
+    path: "/srv/onionoo.torproject.org/onionoo/onionoo-{{ onionoo_version }}.jar"
+  register: jar_stat
+- name: check for latest war
+  stat:
+    path: "/srv/onionoo.torproject.org/onionoo/onionoo-{{ onionoo_version }}.war"
+  register: war_stat
+- name: download latest release
+  get_url:
+    url: https://dist.torproject.org/onionoo/{{ onionoo_version }}/onionoo-{{ onionoo_version }}.tar.gz
+    dest: "/srv/onionoo.torproject.org/home/onionoo-{{ onionoo_version }}.tar.gz"
+  become: true
+  become_user: onionoo
+  when: jar_stat.stat.exists == False or war_stat.stat.exists == False
+- name: create temp directory
+  tempfile:
+    state: directory
+  register: onionoo_unpack
+  become: true
+  become_user: onionoo
+  when: jar_stat.stat.exists == False or war_stat.stat.exists == False
+- name: unpack onionoo release
+  unarchive:
+    remote_src: true
+    src: "/srv/onionoo.torproject.org/home/onionoo-{{ onionoo_version }}.tar.gz"
+    dest: "{{ onionoo_unpack.path }}/"
+  become: true
+  become_user: onionoo
+  when: jar_stat.stat.exists == False or war_stat.stat.exists == False
+- name: copy jar file
+  copy:
+    remote_src: true
+    src: "{{ onionoo_unpack.path }}/onionoo-{{ onionoo_version }}/generated/dist/onionoo-{{ onionoo_version }}.jar"
+    dest: "/srv/onionoo.torproject.org/onionoo/"
+  become: true
+  become_user: onionoo
+  when: jar_stat.stat.exists == False
+- name: copy war file
+  copy:
+    remote_src: true
+    src: "{{ onionoo_unpack.path }}/onionoo-{{ onionoo_version }}/generated/dist/onionoo-{{ onionoo_version }}.war"
+    dest: "/srv/onionoo.torproject.org/onionoo/"
+  become: true
+  become_user: onionoo
+  when: war_stat.stat.exists == False
+- name: delete temporary directory
+  file:
+    path: "{{ onionoo_unpack.path }}"
+    state: absent
+  become: true
+  become_user: onionoo
+  when: jar_stat.stat.exists == False or war_stat.stat.exists == False
+- name: create web logs directory
+  file:
+    path: /srv/onionoo.torproject.org/home-unpriv/web-logs
+    state: directory
+  become: true
+  become_user: onionoo-unpriv
+- name: link web logs directory
+  file:
+    path: /srv/onionoo.torproject.org/onionoo/web-logs
+    src: /srv/onionoo.torproject.org/home-unpriv/web-logs
+    state: link
+  become: true
+  become_user: onionoo
+- name: create systemd user directory for onionoo
+  file:
+    path: /srv/onionoo.torproject.org/home/.config/systemd/user
+    state: directory
+  become: true
+  become_user: onionoo
+- name: create systemd user directory for onionoo-unpriv
+  file:
+    path: /srv/onionoo.torproject.org/home-unpriv/.config/systemd/user
+    state: directory
+  become: true
+  become_user: onionoo-unpriv
+- name: install oninooo updater service file
+  template:
+    src: onionoo.service.j2
+    dest: "/srv/onionoo.torproject.org/home/.config/systemd/user/onionoo.service"
+  become: true
+  become_user: onionoo
+- name: reload systemd daemon
+  systemd:
+    scope: user
+    daemon_reload: yes
+  become: true
+  become_user: onionoo
+- name: install oninooo web server service file
+  template:
+    src: onionoo-web.service.j2
+    dest: "/srv/onionoo.torproject.org/home-unpriv/.config/systemd/user/onionoo-web.service"
+  become: true
+  become_user: onionoo-unpriv
+- name: reload systemd daemon
+  systemd:
+    scope: user
+    daemon_reload: yes
+  become: true
+  become_user: onionoo-unpriv
+- name: start onionoo service
+  systemd:
+    scope: user
+    name: onionoo
+    state: started
+  become: yes
+  become_user: onionoo
+- name: restart onionoo web service status
+  systemd:
+    scope: user
+    name: onionoo-web
+    state: restarted
+  become: yes
+  become_user: onionoo-unpriv

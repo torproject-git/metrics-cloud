@@ -1,0 +1,9 @@
+[Unit]
+Description=Onionoo Updater
+
+[Service]
+WorkingDirectory=/srv/onionoo.torproject.org/onionoo
+ExecStart=java -Xmx4g -Dsun.net.client.defaultConnectTimeout=60000 \
+              -Dsun.net.client.defaultReadTimeout=60000 -DLOGBASE=logs \
+              -cp onionoo-{{ onionoo_version }}.jar \
+              org.torproject.metrics.onionoo.cron.Main

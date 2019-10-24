@@ -1,0 +1,6 @@
+[Unit]
+Description=Onionoo Web Server
+
+[Service]
+WorkingDirectory=/srv/onionoo.torproject.org/onionoo
+ExecStart=java -Xmx2g -DLOGBASE=web-logs -jar onionoo-{{ onionoo_version }}.war
