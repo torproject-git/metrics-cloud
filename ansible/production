@@ -4,5 +4,8 @@
 #op-nl.onionperf.torproject.net
 #op-us.onionperf.torproject.net
 
+[onionoo-backends]
+onionoo-backend-01.torproject.org
+
 [monitors]
-3.92.143.52
+#3.92.143.52
