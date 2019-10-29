@@ -1,0 +1,39 @@
+---
+# CloudFormation Stack for Onionoo development instance
+# This stack will only deploy on us-east-1 and will deploy in the Metrics VPC
+# aws cloudformation deploy --region us-east-1 --stack-name `whoami`-onionoo-dev --template-file onionoo-dev.yml --parameter-overrides myKeyPair="irl yubikey 4"
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  myKeyPair:
+    Description: Amazon EC2 Key Pair
+    Type: "AWS::EC2::KeyPair::KeyName"
+Resources:
+  Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: us-east-1a
+      ImageId: ami-01db78123b2b99496
+      InstanceType: t2.large
+      SubnetId:
+        Fn::ImportValue: !Sub 'MetricsSubnet'
+      KeyName: !Ref myKeyPair
+      SecurityGroupIds:
+        - Fn::ImportValue: !Sub 'MetricsInternetSecurityGroup'
+        - Fn::ImportValue: !Sub 'MetricsPingableSecurityGroup'
+        - Fn::ImportValue: !Sub 'MetricsHTTPASecurityGroup'
+  ServiceVolume:
+    Type: AWS::EC2::Volume
+    Properties: 
+      AvailabilityZone: us-east-1a
+      Size: 15
+      VolumeType: gp2
+  ServiceVolumeAttachment:
+    Type: AWS::EC2::VolumeAttachment
+    Properties:
+      Device: /dev/sdb
+      InstanceId: !Ref Instance
+      VolumeId: !Ref ServiceVolume
+Outputs:
+  PublicIp:
+    Description: "Instance public IP"
+    Value: !GetAtt Instance.PublicIp

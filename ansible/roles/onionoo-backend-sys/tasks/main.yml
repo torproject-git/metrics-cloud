@@ -1,0 +1,76 @@
+---
+- name: install xfsprogs
+  apt:
+    update_cache: yes
+    name: xfsprogs
+    state: present
+  become: yes
+- name: install jdk
+  apt:
+    update_cache: yes
+    name: default-jdk
+    state: present
+  become: yes
+- name: format service volume
+  filesystem:
+    fstype: xfs
+    device: /dev/xvdb
+  become: yes
+- name: add /srv to fstab
+  mount:
+    src: /dev/xvdb
+    path: /srv
+    fstype: xfs
+    dump: 0
+    passno: 2
+    state: mounted
+  become: yes
+- name: create service directory
+  file:
+    path: /srv/onionoo.torproject.org
+    state: directory
+  become: yes
+- name: link /home in /srv
+  file:
+    src: /home
+    dest: /srv/home
+    state: link
+  become: yes
+- name: link home directories /home
+  file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    state: link
+    force: yes
+  with_items:
+    - { src: /home/onionoo, dest: /srv/onionoo.torproject.org/home }
+    - { src: /home/onionoo-unpriv, dest: /srv/onionoo.torproject.org/home-unpriv }
+  become: yes
+- name: create onionoo account
+  user:
+    name: onionoo
+    comment: "Onionoo Service User"
+    uid: 1547
+    state: present
+  become: yes
+- name: create runtime directory
+  file:
+    path: /srv/onionoo.torproject.org/onionoo
+    owner: onionoo
+    group: onionoo
+    mode: 0755
+    state: directory
+  become: yes
+- name: create onionoo-unpriv account
+  user:
+    name: onionoo-unpriv
+    comment: "Onionoo Unpriv Service User"
+    uid: 2075
+    state: present
+  become: yes
+- name: enable lingering for onionoo and onionoo-unpriv
+  shell: "loginctl enable-linger {{ item }}"
+  with_items:
+    - onionoo
+    - onionoo-unpriv
+  become: yes

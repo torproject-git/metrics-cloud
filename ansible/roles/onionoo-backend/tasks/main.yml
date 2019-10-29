@@ -132,6 +132,17 @@
     daemon_reload: yes
   become: true
   become_user: onionoo-unpriv
+- name: check for out directory
+  stat:
+    path: "/srv/onionoo.torproject.org/onionoo/out"
+  register: out_stat
+- name: populate out directory with a single run
+  shell: java -Xmx4g -Dsun.net.client.defaultConnectTimeout=60000 -Dsun.net.client.defaultReadTimeout=60000 -DLOGBASE=logs -cp onionoo-{{ onionoo_version }}.jar org.torproject.metrics.onionoo.cron.Main --single-run
+  args:
+    chdir: /srv/onionoo.torproject.org/onionoo
+  when: out_stat.stat.exists == False
+  become: yes
+  become_user: onionoo
 - name: start onionoo service
   systemd:
     scope: user

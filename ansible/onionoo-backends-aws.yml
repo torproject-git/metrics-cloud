@@ -1,0 +1,15 @@
+---
+- hosts: onionoo-backends
+  user: admin
+  vars:
+    onionoo_version: 7.0-1.21.0
+  pre_tasks:
+    - name: get sudo password
+      local_action: shell pass Tor/sudo/onionoo
+      register: pass_output
+      changed_when: False
+    - name: store as ansible become password
+      set_fact: ansible_become_password="{{ pass_output.stdout_lines[0] }}"
+  roles:
+    - onionoo-backend-sys
+    - onionoo-backend
