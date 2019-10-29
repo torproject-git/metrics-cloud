@@ -89,6 +89,17 @@ Resources:
           FromPort: 443
           ToPort: 443
           CidrIp: 0.0.0.0/0
+  HTTPASecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: "HTTPA Security Group"
+      GroupDescription: "TCP/8080 requests in"
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
 Outputs:
   VPC:
     Value: !Ref VPC
@@ -115,6 +126,11 @@ Outputs:
     Description: Tor Metrics HTTP Security Group ID
     Export:
       Name: !Sub MetricsHTTPSecurityGroup
+  HTTPASecurityGroup:
+    Value: !Ref HTTPASecurityGroup
+    Description: Tor Metrics HTTPA Security Group ID
+    Export:
+      Name: !Sub MetricsHTTPASecurityGroup
   HTTPSSecurityGroup:
     Value: !Ref HTTPSSecurityGroup
     Description: Tor Metrics HTTPS Security Group ID
