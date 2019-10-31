@@ -19,6 +19,15 @@ Resources:
         - Fn::ImportValue: !Sub 'MetricsPingableSecurityGroup'
         - Fn::ImportValue: !Sub 'MetricsHTTPSecurityGroup'
         - Fn::ImportValue: !Sub 'MetricsHTTPSSecurityGroup'
+  OnionperfDNS:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: onionperf-dev.torproject.net.
+      Name: !Join ['', [!Ref 'AWS::StackName', .onionperf-dev.torproject.net.]]
+      Type: A
+      TTL: '300'
+      ResourceRecords:
+      - !GetAtt Instance.PublicIp
 Outputs:
   PublicIp:
     Description: "Instance public IP"
