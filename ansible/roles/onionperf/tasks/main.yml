@@ -40,13 +40,13 @@
 - name: clone onionperf repository
   git:
     repo: 'https://git.torproject.org/onionperf.git'
-    dest: /srv/checkout
+    dest: /srv/checkout/onionperf
   become: true
-  register: opchange
+  register: oprepo
 - name: clone tgen repository
   git:
     repo: 'https://github.com/shadow/tgen.git'
-    dest: /srv/checkout
+    dest: /srv/checkout/tgen
   become: true
   register: tgenrepo
 - name: create tgen build dir
@@ -67,6 +67,12 @@
     dest: "/usr/bin/tgen"
     state: link
   when: tgenrepo.changed
+  become: true
+- name: build and install onionperf
+  command: "{{ item }} chdir=/srv/checkout/onionperf"
+  with_items:
+    - python setup.py install
+  when: oprepo.changed
   become: true
 - name: create onionperf user
   user:
