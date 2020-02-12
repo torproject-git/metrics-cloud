@@ -31,12 +31,6 @@
     - python-scipy
   become: true
   notify: restart onionperf
-- name: install onionperf
-  apt:
-    deb: https://people.torproject.org/~irl/deb/onionperf_2019052301_amd64.deb
-    state: present
-  become: true
-  notify: restart onionperf
 - name: create onionperf user
   user:
     name: onionperf
