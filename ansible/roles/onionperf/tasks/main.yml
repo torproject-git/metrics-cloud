@@ -19,6 +19,7 @@
     state: latest
   vars:
     packages:
+    - git
     - libglib2.0-0
     - libigraph0v5
     - python-ipaddress
@@ -31,6 +32,18 @@
     - python-scipy
   become: true
   notify: restart onionperf
+- name: clone onionperf repository
+  git:
+    repo: 'https://git.torproject.org/onionperf.git'
+    dest: /srv/checkout
+  become: true
+  register: opchange
+- name: clone tgen repository
+  git:
+    repo: 'https://github.com/shadow/tgen.git'
+    dest: /srv/checkout
+  become: true
+  register: tgenchange
 - name: create onionperf user
   user:
     name: onionperf
