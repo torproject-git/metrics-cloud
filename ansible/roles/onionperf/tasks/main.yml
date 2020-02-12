@@ -20,6 +20,11 @@
   vars:
     packages:
     - git
+    - cmake
+    - make
+    - libigraph0-dev 
+    - libglib2.0-dev 
+    - python-dev
     - libglib2.0-0
     - libigraph0v5
     - python-ipaddress
@@ -43,7 +48,26 @@
     repo: 'https://github.com/shadow/tgen.git'
     dest: /srv/checkout
   become: true
-  register: tgenchange
+  register: tgenrepo
+- name: create tgen build dir
+  file: 
+    state: directory
+    path: /srv/checkout/tgen/build
+  become: true
+- name: build tgen
+  command: "{{ item }} chdir=/srv/checkout/tgen/build"
+  with_items:
+    - cmake ..
+    - make
+  when: tgenrepo.changed
+  become: true
+- name: install tgen
+  file:
+    src: "/srv/checkout/tgen/build/tgen"
+    dest: "/usr/bin/tgen"
+    state: link
+  when: tgenrepo.changed
+  become: true
 - name: create onionperf user
   user:
     name: onionperf
