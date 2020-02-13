@@ -100,39 +100,50 @@ Resources:
           FromPort: 8080
           ToPort: 8080
           CidrIp: 0.0.0.0/0
+  DevZone:
+    Type: "AWS::Route53::HostedZone"
+    Properties:
+      HostedZoneConfig:
+        Comment: 'DNS zone for development EC2 instances'
+      Name: 'tm-dev-aws.safemetrics.org'
 Outputs:
   VPC:
     Value: !Ref VPC
     Description: Tor Metrics VPC ID
     Export:
-      Name: !Sub MetricsVPC
+      Name: MetricsVPC
   Subnet:
     Value: !Ref Subnet
     Description: Tor Metrics Subnet ID
     Export:
-      Name: !Sub MetricsSubnet
+      Name: MetricsSubnet
   InternetSecurityGroup:
     Value: !Ref InternetSecurityGroup
     Description: Tor Metrics Internet Security Group ID
     Export:
-      Name: !Sub MetricsInternetSecurityGroup
+      Name: MetricsInternetSecurityGroup
   PingableSecurityGroup:
     Value: !Ref PingableSecurityGroup
     Description: Tor Metrics Pingable Security Group ID
     Export:
-      Name: !Sub MetricsPingableSecurityGroup
+      Name: MetricsPingableSecurityGroup
   HTTPSecurityGroup:
     Value: !Ref HTTPSecurityGroup
     Description: Tor Metrics HTTP Security Group ID
     Export:
-      Name: !Sub MetricsHTTPSecurityGroup
+      Name: MetricsHTTPSecurityGroup
   HTTPASecurityGroup:
     Value: !Ref HTTPASecurityGroup
     Description: Tor Metrics HTTPA Security Group ID
     Export:
-      Name: !Sub MetricsHTTPASecurityGroup
+      Name: MetricsHTTPASecurityGroup
   HTTPSSecurityGroup:
     Value: !Ref HTTPSSecurityGroup
     Description: Tor Metrics HTTPS Security Group ID
     Export:
-      Name: !Sub MetricsHTTPSSecurityGroup
+      Name: MetricsHTTPSSecurityGroup
+  DevZone:
+    Value: !Ref DevZone
+    Description: Tor Metrics Development DNS Zone
+    Export:
+      Name: MetricsDevZone
