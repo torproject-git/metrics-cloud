@@ -1,4 +1,10 @@
 ---
+- name: install gpg
+  apt:
+    pkg:
+      - gnupg2
+    update_cache: yes
+  become: true
 - name: include deb.torproject.org apt key
   apt_key:
     url: https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc
