@@ -1,0 +1,83 @@
+---
+- name: disable system tor
+  systemd:
+    name: tor.service
+    enabled: false
+    state: stopped
+  become: true
+- name: install stem for py2 from backports
+  apt:
+    pkg: python-stem
+    state: latest
+    default_release: buster-backports
+  become: true
+- name: install stem for py3 from backports
+  apt:
+    pkg: python3-stem
+    state: latest
+    default_release: buster-backports
+  become: true
+- name: install exitmap requirements
+  apt:
+    pkg:
+      - git
+      - python-dnspython
+    update_cache: yes
+  become: yes
+- name: create check account
+  user:
+    name: check
+    comment: "Check Service User"
+    #uid: 1547
+    state: present
+  become: yes
+- name: create tordnsel account
+  user:
+    name: tordnsel
+    comment: "Exit Scanner Service User"
+    #uid: 1547
+    state: present
+  become: yes
+- name: create service directory
+  file:
+    path: /srv/exitscanner.torproject.org
+    state: directory
+  become: yes
+- name: link /home in /srv
+  file:
+    src: /home
+    dest: /srv/home
+    state: link
+  become: yes
+- name: link home directories /home
+  file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    state: link
+    force: yes
+  with_items:
+    - { src: /home/tordnsel, dest: /srv/exitscanner.torproject.org/home }
+    - { src: /home/check, dest: /srv/exitscanner.torproject.org/check-home }
+  become: yes
+- name: create exit scanner runtime directory
+  file:
+    path: /srv/exitscanner.torproject.org/exitscanner
+    owner: tordnsel
+    group: tordnsel
+    mode: 0755
+    state: directory
+  become: yes
+- name: create check runtime directory
+  file:
+    path: /srv/exitscanner.torproject.org/check
+    owner: check
+    group: check
+    mode: 0755
+    state: directory
+  become: yes
+- name: enable lingering for service users
+  shell: "loginctl enable-linger {{ item }}"
+  with_items:
+    - tordnsel
+    - check
+  become: yes
