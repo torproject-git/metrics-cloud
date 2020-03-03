@@ -3,8 +3,8 @@ Description=Exit Scanner
 
 [Service]
 Type=simple
-WorkingDirectory=/srv/exitscanner.torproject.org/exitscanner
-ExecStart=/usr/bin/python3 /srv/exitscanner.torproject.org/exitscanner/exitscan.py
+WorkingDirectory=/srv/tordnsel.torproject.org
+ExecStart=/usr/bin/python3 /srv/tordnsel.torproject.org/exitscanner/exitscan.py
 
 [Install]
 WantedBy=default.target

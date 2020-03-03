@@ -1,0 +1,63 @@
+---
+- name: clone the sources
+  git:
+    repo: https://git.torproject.org/check.git
+    dest: /srv/check.torproject.org/check
+  become: true
+  become_user: check
+- name: create a gopath directory
+  file:
+    path: /srv/check.torproject.org/go
+    state: directory
+  become: true
+  become_user: check
+#- name: install the ipscan module
+#  copy:
+#    src: ipscan.py
+#    dest: /srv/tordnsel.torproject.org/exitscanner/exitmap/src/modules/ipscan.py
+#    mode: 0755
+#  become: true
+#  become_user: tordnsel
+- name: create systemd user directory for check
+  file:
+    path: /srv/check.torproject.org/.config/systemd/user
+    state: directory
+  become: true
+  become_user: check
+- name: get sources for go gettext
+  shell:
+    cmd: go get github.com/samuel/go-gettext/gettext
+  become: true
+  become_user: check
+- name: update translations
+  make:
+    chdir: /srv/check.torproject.org/check
+    target: i18n
+  become: true
+  become_user: check
+- name: build
+  make:
+    chdir: /srv/check.torproject.org/check
+    target: build
+  become: true
+  become_user: check
+#- name: install exit scanner service file
+#  copy:
+#    src: exitscanner.service
+#    dest: "/srv/tordnsel.torproject.org/.config/systemd/user/exitscanner.service"
+#  become: true
+#  become_user: tordnsel
+#- name: reload systemd daemon
+#  systemd:
+#    scope: user
+#    daemon_reload: yes
+#  become: true
+#  become_user: tordnsel
+#- name: enable and start exitscanner service
+#  systemd:
+#    scope: user
+#    name: exitscanner
+#    state: started
+#    enabled: yes
+#  become: yes
+#  become_user: tordnsel

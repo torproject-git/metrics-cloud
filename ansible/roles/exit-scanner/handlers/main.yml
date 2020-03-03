@@ -1,0 +1,8 @@
+- name: restart exit scanner
+  systemd:
+    scope: user
+    daemon_reload: true
+    name: exitscanner
+    state: restarted
+  become: yes
+  become_user: tordnsel

@@ -54,7 +54,7 @@ def run():
 
     # Import new measurements
     with subprocess.Popen(["./bin/exitmap", "ipscan", "-o", "/dev/stdout"],
-                          cwd="/srv/exitscanner.torproject.org/exitscanner/exitmap",
+                          cwd="/srv/tordnsel.torproject.org/exitscanner/exitmap",
                           stdout=subprocess.PIPE,
                           encoding='utf-8') as p:
         for line in p.stdout:
@@ -63,7 +63,6 @@ def run():
                 r"^([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}),[0-9]{3} modules\.ipscan \[INFO\] (\{.*\})$",
                 line)
             if result:
-                print(result)
                 check_result = json.loads(result.group(2))
                 desc = stem.descriptor.tordnsel.TorDNSEL("", False)
                 desc.fingerprint = check_result["Fingerprint"]
@@ -94,7 +93,10 @@ def run():
                     out.write(f"ExitAddress {a[0]} {a[1]}\n")
 
     # Provide the snapshot emulation
-    os.unlink("lists/latest")
+    try:
+        os.unlink("lists/latest")
+    except FileNotFoundError:
+        pass # ok maybe this is the first time we run
     os.symlink(os.path.abspath(f"lists/{filename}"), "lists/latest")
 
 if __name__ == "__main__":

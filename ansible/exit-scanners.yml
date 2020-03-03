@@ -1,0 +1,14 @@
+---
+- hosts: exit-scanners
+  pre_tasks:
+    - name: get sudo password
+      local_action: shell pass Tor/sudo/check
+      register: pass_output
+      changed_when: False
+      when: ansible_user_id == "irl"
+    - name: store as ansible become password
+      set_fact: ansible_become_password="{{ pass_output.stdout_lines[0] }}"
+      when: ansible_user_id == "irl"
+  roles:
+    - exit-scanner
+    - check

@@ -1,9 +1,8 @@
 ---
 - hosts: exit-scanners
   user: admin
-  vars:
-    onionoo_version: 7.0-1.21.0
   roles:
     - tor-client
     - exit-scanner-sys
     - exit-scanner
+    - check
