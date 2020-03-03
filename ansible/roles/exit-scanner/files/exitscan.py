@@ -2,6 +2,7 @@
 import collections
 import datetime
 import glob
+import ipaddress
 import json
 import os
 import os.path
@@ -98,6 +99,31 @@ def run():
     except FileNotFoundError:
         pass # ok maybe this is the first time we run
     os.symlink(os.path.abspath(f"lists/{filename}"), "lists/latest")
+
+    # Format a DNS zone
+    with open(f"dnsel.torproject.org", "w") as out:
+        out.write("""$TTL  1200 ; seconds
+$ORIGIN dnsel.torproject.org.
+
+@  1D  IN  SOA check-01.torproject.org. metrics-team.lists.torproject.org. (
+                              """ + datetime.datetime.utcnow().strftime("%y%m%d%H%M") + """
+                              1H ; refresh
+                              15 ; retry
+                              1H ; expire
+                              15 ; nxdomain ttl
+                             )
+       IN  NS     check-01.torproject.org.
+""")
+        exit_addresses = collections.defaultdict(list)
+        for desc in exits.values():
+            for exit_address in desc.exit_addresses:
+                exit_addresses[exit_address[0]].append(desc.fingerprint)
+        for exit_address in exit_addresses:
+            reverse = ipaddress.ip_address(exit_address).reverse_pointer.split(".i")[0]
+            out.write(reverse + " IN A 127.0.0.2\n")
+            for fingerprint in exit_addresses[exit_address]:
+                out.write(reverse + " IN TXT \"" + fingerprint + "\"\n")
+    os.system("sudo /usr/sbin/rndc reload dnsel.torproject.org")
 
 if __name__ == "__main__":
     while True:
