@@ -1,0 +1,9 @@
+[Unit]
+Description=Tor Client (Check)
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/tor -f /srv/check.torproject.org/torrc
+
+[Install]
+WantedBy=default.target

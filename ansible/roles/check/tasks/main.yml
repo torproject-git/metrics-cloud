@@ -11,13 +11,6 @@
     state: directory
   become: true
   become_user: check
-#- name: install the ipscan module
-#  copy:
-#    src: ipscan.py
-#    dest: /srv/tordnsel.torproject.org/exitscanner/exitmap/src/modules/ipscan.py
-#    mode: 0755
-#  become: true
-#  become_user: tordnsel
 - name: create systemd user directory for check
   file:
     path: /srv/check.torproject.org/.config/systemd/user
@@ -41,23 +34,30 @@
     target: build
   become: true
   become_user: check
-#- name: install exit scanner service file
-#  copy:
-#    src: exitscanner.service
-#    dest: "/srv/tordnsel.torproject.org/.config/systemd/user/exitscanner.service"
-#  become: true
-#  become_user: tordnsel
-#- name: reload systemd daemon
-#  systemd:
-#    scope: user
-#    daemon_reload: yes
-#  become: true
-#  become_user: tordnsel
-#- name: enable and start exitscanner service
-#  systemd:
-#    scope: user
-#    name: exitscanner
-#    state: started
-#    enabled: yes
-#  become: yes
-#  become_user: tordnsel
+- name: install tor client torrc
+  copy:
+    src: torrc
+    dest: /srv/check.torproject.org/torrc
+  become: true
+  become_user: check
+- name: create tor data directory
+  file:
+    path: /srv/check.torproject.org/tordata
+    state: directory
+  become: true
+  become_user: check
+- name: install tor client service file
+  copy:
+    src: checktor.service
+    dest: "/srv/check.torproject.org/.config/systemd/user/checktor.service"
+  become: true
+  become_user: check
+- name: enable and start tor client service
+  systemd:
+    scope: user
+    name: checktor
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  become: yes
+  become_user: check
