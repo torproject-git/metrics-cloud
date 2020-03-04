@@ -1,0 +1,10 @@
+[Unit]
+Description=Check Web Service
+
+[Service]
+Type=simple
+WorkingDirectory=/srv/check.torproject.org/check
+ExecStart=/srv/check.torproject.org/check/check -port 8080
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,6 @@
+[Unit]
+Description=Check updater
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash /srv/check.torproject.org/cpexits.sh

@@ -46,18 +46,36 @@
     state: directory
   become: true
   become_user: check
-- name: install tor client service file
+- name: install check update script
   copy:
-    src: checktor.service
-    dest: "/srv/check.torproject.org/.config/systemd/user/checktor.service"
+    src: cpexits.sh
+    dest: "/srv/check.torproject.org/cpexits.sh"
   become: true
   become_user: check
-- name: enable and start tor client service
+- name: install systemd units
+  copy:
+    src: "{{ item }}"
+    dest: /srv/check.torproject.org/.config/systemd/user/
+    owner: check
+    group: check
+    mode: 0644
+  with_items:
+    - check.service
+    - checktor.service
+    - checkupdate.service
+    - checkupdate.timer
+  become: true
+  become_user: check
+- name: enable and start services and timers
   systemd:
     scope: user
-    name: checktor
+    name: "{{ item }}"
     state: started
     enabled: yes
     daemon_reload: yes
+  with_items:
+    - check.service
+    - checktor.service
+    - checkupdate.timer
   become: yes
   become_user: check
