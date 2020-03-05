@@ -6,7 +6,7 @@ DNSEL=/srv/tordnsel.torproject.org
 NOW=$(date +"%Y-%m-%d-%H-%M-%S")
 
 find $CHECK/data/exit-lists -type f -mtime +1 -delete
-cat $DNSEL/exit-addresses > $CHECK/data/exit-lists/$NOW
+cat $DNSEL/lists/latest > $CHECK/data/exit-lists/$NOW
 
 find $CHECK/data/consensuses -type f -mtime +1 -delete
 cp $TORDATA/cached-consensus $CHECK/data/consensuses/$NOW-consensus
