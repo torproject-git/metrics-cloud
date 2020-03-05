@@ -125,6 +125,11 @@ $ORIGIN dnsel.torproject.org.
                 out.write(reverse + " IN TXT \"" + fingerprint + "\"\n")
     os.system("sudo /usr/sbin/rndc reload dnsel.torproject.org")
 
+    # Format a bulk exit list
+    with open("lists/bulk", "w") as out:
+        for exit_address in exit_addresses:
+            out.write(exit_address + "\n")
+
 if __name__ == "__main__":
     while True:
         start = datetime.datetime.utcnow()
