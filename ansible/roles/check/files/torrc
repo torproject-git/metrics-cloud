@@ -4,5 +4,3 @@ FetchUselessDescriptors 1
 UseMicrodescriptors 0
 DownloadExtraInfo 1
 DataDirectory /srv/check.torproject.org/tordata
-SocksPort 0
-ControlPort 0
