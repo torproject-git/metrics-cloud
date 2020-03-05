@@ -113,7 +113,7 @@ $ORIGIN dnsel.torproject.org.
                               15 ; nxdomain ttl
                              )
        IN  NS     check-01.torproject.org.
-""")
+""") # fix the serial number generation before 2042 because 2^32 overflow
         exit_addresses = collections.defaultdict(list)
         for desc in exits.values():
             for exit_address in desc.exit_addresses:
