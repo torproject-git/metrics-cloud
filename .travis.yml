@@ -12,4 +12,5 @@ jobs:
     install:
     - pip install cfn-lint
     script:
-    - cfn-lint cloudformation/*.yml
+    # https://github.com/aws-cloudformation/cfn-python-lint/issues/1425
+    - cfn-lint -x E3012:strict=false cloudformation/*.yml
