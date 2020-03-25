@@ -11,7 +11,7 @@ Resources:
   Instance:
     Type: AWS::EC2::Instance
     Properties:
-      AvailabilityZone: us-east-1a
+      AvailabilityZone: !Select [ 0, !GetAZs ]
       ImageId: ami-01db78123b2b99496
       InstanceType: t2.large
       SubnetId:
