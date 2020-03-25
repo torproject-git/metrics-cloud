@@ -22,8 +22,8 @@ Resources:
       - Name: LinkedAccount
         Value: !Sub ${AWS::AccountId}
       Statistic: Maximum
-      Period: '21600'
-      EvaluationPeriods: '1'
+      Period: 21600
+      EvaluationPeriods: 1
       Threshold:
         Ref: "DevAlarmThreshold"
       ComparisonOperator: GreaterThanThreshold
