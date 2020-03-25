@@ -15,12 +15,12 @@ Resources:
       ImageId: ami-01db78123b2b99496
       InstanceType: t2.large
       SubnetId:
-        Fn::ImportValue: !Sub 'MetricsSubnet'
+        Fn::ImportValue: 'MetricsSubnet'
       KeyName: !Ref myKeyPair
       SecurityGroupIds:
-        - Fn::ImportValue: !Sub 'MetricsInternetSecurityGroup'
-        - Fn::ImportValue: !Sub 'MetricsPingableSecurityGroup'
-        - Fn::ImportValue: !Sub 'MetricsHTTPASecurityGroup'
+        - Fn::ImportValue: 'MetricsInternetSecurityGroup'
+        - Fn::ImportValue: 'MetricsPingableSecurityGroup'
+        - Fn::ImportValue: 'MetricsHTTPASecurityGroup'
   ServiceVolume:
     Type: AWS::EC2::Volume
     Properties: 

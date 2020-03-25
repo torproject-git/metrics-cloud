@@ -12,14 +12,14 @@ Resources:
       ImageId: ami-01db78123b2b99496
       InstanceType: t2.micro
       SubnetId:
-        Fn::ImportValue: !Sub 'MetricsSubnet'
+        Fn::ImportValue: 'MetricsSubnet'
       IamInstanceProfile: !Ref AlerterInstanceProfile
       KeyName: "irl yubikey 4"
       SecurityGroupIds:
-        - Fn::ImportValue: !Sub 'MetricsInternetSecurityGroup'
-        - Fn::ImportValue: !Sub 'MetricsPingableSecurityGroup'
-        - Fn::ImportValue: !Sub 'MetricsHTTPSecurityGroup'
-        - Fn::ImportValue: !Sub 'MetricsHTTPSSecurityGroup'
+        - Fn::ImportValue: 'MetricsInternetSecurityGroup'
+        - Fn::ImportValue: 'MetricsPingableSecurityGroup'
+        - Fn::ImportValue: 'MetricsHTTPSecurityGroup'
+        - Fn::ImportValue: 'MetricsHTTPSSecurityGroup'
   AlertContact:
     Type: AWS::SNS::Topic
     Properties:
