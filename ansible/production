@@ -6,6 +6,10 @@
 
 [onionoo-backends]
 onionoo-backend-01.torproject.org
+onionoo-backend-02.torproject.org
 
 [monitors]
-#3.92.143.52
+3.92.143.52
+
+[exit-scanners]
+check-01.torproject.org
