@@ -4,7 +4,7 @@
 if [[ -v $TOR_METRICS_SSH_KEY ]]; then
 	echo $TOR_METRICS_SSH_KEY
 	exit 0
-done
+fi
 
 # Otherwise, make a guess based on the username.
 #
