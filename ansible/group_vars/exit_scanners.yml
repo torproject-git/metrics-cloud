@@ -1,0 +1,15 @@
+---
+metrics_dependency_pkgs:
+  - git
+  - python-dnspython
+  - curl
+  - gettext
+  - golang-go
+  - build-essential
+  - python-dateutil
+metrics_backport_pkgs:
+  - python-stem
+  - python3-stem
+metrics_service_users:
+  - {name: tordnsel, uid: 1532, home: "/home/tordnsel", linger: yes}
+  - {name: check, uid: 1507, home: "/home/check", linger: yes}

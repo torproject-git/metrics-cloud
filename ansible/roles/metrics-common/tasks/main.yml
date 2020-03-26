@@ -1,0 +1,68 @@
+---
+- name: set timezone to UTC
+  timezone:
+    name: UTC
+- name: enable password-less sudo for sudo group
+  lineinfile:
+    path: /etc/sudoers
+    regexp: '^%sudo'
+    line: '%sudo ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
+- name: create metrics users
+  user:
+    name: "{{ item }}"
+    password: "*"
+  with_items: "{{ metrics_users }}"
+- name: ensure users are in correct primary group and sudo group
+  user:
+    name: "{{ item }}"
+    group: "{{ item }}"
+    append: yes
+    groups: "sudo"
+  with_items: "{{ metrics_users }}"
+- name: disable root password
+  user:
+    name: root
+    password: '*'
+- name: set up authorized keys
+  authorized_key:
+    user: "{{ item }}"
+    state: present
+    exclusive: yes
+    key: "{{ lookup('file', 'ssh_user_keys/' + item) }}"
+  with_items: "{{ metrics_users }}"
+- name: sshd PermitRootLogin=no
+  lineinfile:
+    dest: "/etc/ssh/sshd_config"
+    regexp: "^#?PermitRootLogin"
+    line: "PermitRootLogin prohibit-password"
+    state: present
+  notify: "reload sshd"
+- name: sshd PasswordAuthentication=no
+  lineinfile:
+    dest: "/etc/ssh/sshd_config"
+    regexp: "^#?PasswordAuthentication"
+    line: "PasswordAuthentication no"
+    state: present
+  notify: "reload sshd"
+- name: install vim defaults
+  become: true
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  copy:
+    src: vimrc.local
+    dest: /etc/vim/vimrc.local
+- name: add backports repository
+  apt_repository:
+    repo: 'deb http://http.debian.net/debian {{ ansible_distribution_release }}-backports main contrib non-free'
+    state: present
+- name: install dependency packages
+  apt:
+    pkg: "{{ metrics_dependency_pkgs }}"
+    state: latest
+    update_cache: yes
+- name: install dependency (backport) packages
+  apt:
+    pkg: "{{ metrics_backport_pkgs }}"
+    state: latest
+    update_cache: yes
+    default_release: "{{ ansible_distribution_release }}-backports"
