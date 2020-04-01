@@ -8,6 +8,7 @@ import os
 import os.path
 import re
 import subprocess
+import threading
 
 import stem.descriptor
 
@@ -54,10 +55,13 @@ def run():
             merge(desc)
 
     # Import new measurements
+    kill = lambda process: process.kill()
     with subprocess.Popen(["./bin/exitmap", "ipscan", "-o", "/dev/stdout"],
                           cwd="/srv/tordnsel.torproject.org/exitscanner/exitmap",
                           stdout=subprocess.PIPE,
                           encoding='utf-8') as p:
+        scantimer = threading.Timer(7200, kill, [p])
+        scantimer.start()
         for line in p.stdout:
             print(line)
             result = re.match(
@@ -76,6 +80,7 @@ def run():
                                                 "%Y-%m-%d %H:%M:%S"))
                 ]
                 merge(desc)
+        scantimer.cancel()
 
     # Format exit list filename
     now = datetime.datetime.utcnow()

@@ -1,4 +1,5 @@
 ---
-- import_playbook: common.yml
+- import_playbook: exit-scanners.yml
 - import_playbook: monitors.yml
+- import_playbook: onionoo-backends.yml
 - import_playbook: onionperfs.yml

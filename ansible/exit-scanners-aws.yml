@@ -1,8 +1,8 @@
 ---
-- hosts: exit-scanners
-  user: admin
+- hosts: exit_scanners
+  become: true
   roles:
-    - tor-client
-    - exit-scanner-sys
-    - exit-scanner
-    - check
+    - metrics-common
+    #- tor-client
+    #- exit-scanner
+    #- check

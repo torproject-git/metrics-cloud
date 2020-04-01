@@ -1,3 +1,0 @@
----
-backports_uri: http://archive.ubuntu.com/ubuntu
-backports_components: "{{backports_distribution}}-backports main restricted universe multiverse"

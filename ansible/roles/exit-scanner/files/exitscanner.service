@@ -5,6 +5,7 @@ Description=Exit Scanner
 Type=simple
 WorkingDirectory=/srv/tordnsel.torproject.org
 ExecStart=/usr/bin/python3 /srv/tordnsel.torproject.org/exitscanner/exitscan.py
+StandardOutput=file:/srv/tordnsel.torproject.org/exitscanner.log
 
 [Install]
 WantedBy=default.target

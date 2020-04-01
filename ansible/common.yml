@@ -1,5 +1,0 @@
----
-- hosts: all
-  user: admin
-  roles:
-    - sanity

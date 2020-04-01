@@ -21,6 +21,15 @@ Resources:
         - Fn::ImportValue: 'MetricsInternetSecurityGroup'
         - Fn::ImportValue: 'MetricsPingableSecurityGroup'
         - Fn::ImportValue: 'MetricsHTTPSSecurityGroup'
+  InstanceDNSName:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: tm-dev-aws.safemetrics.org.
+      Name: !Join ['', [!Ref 'AWS::StackName', .tm-dev-aws.safemetrics.org.]]
+      Type: A
+      TTL: '300'
+      ResourceRecords:
+      - !GetAtt Instance.PublicIp
 Outputs:
   PublicIp:
     Description: "Instance public IP"
