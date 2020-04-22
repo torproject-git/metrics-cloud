@@ -63,7 +63,6 @@ def run():
         scantimer = threading.Timer(7200, kill, [p])
         scantimer.start()
         for line in p.stdout:
-            print(line)
             result = re.match(
                 r"^([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}),[0-9]{3} modules\.ipscan \[INFO\] (\{.*\})$",
                 line)
