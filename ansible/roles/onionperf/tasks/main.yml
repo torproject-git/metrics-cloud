@@ -19,6 +19,12 @@
     state: latest
   vars:
     packages:
+    - git
+    - cmake
+    - make
+    - libigraph0-dev
+    - libglib2.0-dev
+    - python-dev
     - libglib2.0-0
     - libigraph0v5
     - python-ipaddress
@@ -31,12 +37,45 @@
     - python-scipy
   become: true
   notify: restart onionperf
-- name: install onionperf
-  apt:
-    deb: https://people.torproject.org/~irl/deb/onionperf_2019052301_amd64.deb
-    state: present
+- name: clone onionperf repository
+  git:
+    repo: 'https://git.torproject.org/onionperf.git'
+    dest: "{{ onionperf_clone_directory }}"
+    version: "{{ op_version }}"
   become: true
-  notify: restart onionperf
+  register: oprepo
+- name: clone tgen repository
+  git:
+    repo: 'https://github.com/shadow/tgen.git'
+    dest: "{{ tgen_clone_directory }}"
+    version: "{{ tgen_version }}"
+  become: true
+  register: tgenrepo
+- name: create tgen build dir
+  file:
+    state: directory
+    path: "{{ tgen_clone_directory }}/build"
+  become: true
+- name: build tgen
+  command: "{{ item }} chdir={{ tgen_clone_directory }}/build"
+  with_items:
+    - cmake ..
+    - make
+  when: tgenrepo.changed
+  become: true
+- name: install tgen
+  file:
+    src: "{{ tgen_clone_directory }}/build/tgen"
+    dest: "/usr/bin/tgen"
+    state: link
+  when: tgenrepo.changed
+  become: true
+- name: build and install onionperf
+  command: "{{ item }} chdir={{ onionperf_clone_directory }}"
+  with_items:
+    - python setup.py install
+  when: oprepo.changed
+  become: true
 - name: create onionperf user
   user:
     name: onionperf

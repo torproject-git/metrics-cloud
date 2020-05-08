@@ -7,7 +7,7 @@ After=network-online.target
 Type=simple
 User=onionperf
 WorkingDirectory=/srv/onionperf.torproject.net
-ExecStart=/usr/bin/onionperf measure --tgen-listen-port 443
+ExecStart=/usr/local/bin/onionperf measure --tgen-listen-port 443
 
 [Install]
 WantedBy=multi-user.target

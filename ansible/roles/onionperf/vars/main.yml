@@ -1,0 +1,7 @@
+---
+
+working_dir: "/srv/onionperf.torproject.net/"
+onionperf_clone_directory : "/srv/onionperf.torproject.net/onionperf/"
+tgen_clone_directory : "/srv/onionperf.torproject.net/tgen/"
+op_version: "master"
+tgen_version: "master"
